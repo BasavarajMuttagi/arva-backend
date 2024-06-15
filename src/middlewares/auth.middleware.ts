@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 
 import { Request, Response, NextFunction } from "express";
-import { SECRET } from "..";
+import { SECRET } from "../..";
+
 export type tokenType = {
   userId: string;
   email: string;

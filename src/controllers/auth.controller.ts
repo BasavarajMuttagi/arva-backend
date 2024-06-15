@@ -3,7 +3,8 @@ import * as bcrypt from "bcrypt";
 import { userLoginType, userSignUpType } from "../zod/schemas";
 import prisma from "../../prisma/db";
 import { sign } from "jsonwebtoken";
-import { SECRET } from "..";
+import { SECRET } from "../..";
+
 
 const SignUpUser = async (req: Request, res: Response) => {
   try {

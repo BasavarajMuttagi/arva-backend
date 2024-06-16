@@ -6,6 +6,18 @@ const addShopToFavorite = async (req: Request, res: Response) => {
   try {
     const { userId } = req.body.user as tokenType;
     const { shopId } = req.body;
+
+    const existingFavorite = await prisma.favorite.findFirst({
+      where: {
+        userId,
+        coffeeShopId: shopId,
+      },
+    });
+
+    if (existingFavorite) {
+      return res.status(400).send({ message: "Shop already in favorites" });
+    }
+
     const record = await prisma.favorite.create({
       data: { coffeeShopId: shopId, userId },
     });

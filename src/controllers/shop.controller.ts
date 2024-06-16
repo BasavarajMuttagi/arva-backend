@@ -26,7 +26,7 @@ const CreateShop = async (req: Request, res: Response) => {
 
 const GetShopsNearYou = async (req: Request, res: Response) => {
   try {
-    const user = req.body.user as tokenType;
+    const {userId} = req.body.user as tokenType;
     const { long, lat, min_distance, max_distance } = req.body;
     const records = await prisma.coffeeShop.aggregateRaw({
       pipeline: [
@@ -43,6 +43,30 @@ const GetShopsNearYou = async (req: Request, res: Response) => {
             _id: { $toString: "$_id" },
             createdAt: { $toString: "$createdAt" },
             updatedAt: { $toString: "$updatedAt" },
+          },
+        },
+        {
+          $lookup: {
+            from: "favorites",
+            let: { shopId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$coffeeShopId", "$$shopId"] },
+                      { $eq: ["$userId", userId] },
+                    ],
+                  },
+                },
+              },
+            ],
+            as: "fav",
+          },
+        },
+        {
+          $addFields: {
+            fav: { $cond: [{ $gt: [{ $size: "$fav" }, 0] }, true, false] },
           },
         },
       ],

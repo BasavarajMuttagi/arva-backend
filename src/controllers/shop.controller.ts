@@ -1,18 +1,16 @@
 import { Request, Response } from "express";
-import prisma from "../../prisma/db";
 import { tokenType } from "../middlewares/auth.middleware";
+import { CoffeeShop } from "../models/Models";
 
 const CreateShop = async (req: Request, res: Response) => {
   try {
     const user = req.body.user as tokenType;
-    const record = await prisma.coffeeShop.create({
-      data: {
-        name: "Cafetree",
-        address: "Vijayapura, Karnataka 586101",
-        geo: {
-          type: "Point",
-          coordinates: [75.72543250758099, 16.808189840933924],
-        },
+    const record = await CoffeeShop.create({
+      name: "Chai Patram",
+      address: "Vijayapura, Karnataka 586101",
+      location: {
+        type: "Point",
+        coordinates: [75.71949571239814, 16.813640678849257],
       },
     });
 
@@ -26,51 +24,47 @@ const CreateShop = async (req: Request, res: Response) => {
 
 const GetShopsNearYou = async (req: Request, res: Response) => {
   try {
-    const {userId} = req.body.user as tokenType;
-    const { long, lat, min_distance, max_distance } = req.body;
-    const records = await prisma.coffeeShop.aggregateRaw({
-      pipeline: [
-        {
-          $geoNear: {
-            near: { type: "Point", coordinates: [long, lat] },
-            distanceField: "distance",
-            maxDistance: max_distance,
-            spherical: true,
-          },
+    const { userId } = req.body.user as tokenType;
+    const { long, lat, max_distance } = req.body;
+    const records = await CoffeeShop.aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [long, lat] },
+          distanceField: "distance",
+          maxDistance: max_distance,
+          spherical: true,
         },
-        {
-          $addFields: {
-            _id: { $toString: "$_id" },
-            createdAt: { $toString: "$createdAt" },
-            updatedAt: { $toString: "$updatedAt" },
-          },
+      },
+      {
+        $lookup: {
+          from: "userpreferences",
+          localField: "_id",
+          foreignField: "coffeeShop",
+          as: "pref",
         },
-        {
-          $lookup: {
-            from: "favorites",
-            let: { shopId: "$_id" },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      { $eq: ["$coffeeShopId", "$$shopId"] },
-                      { $eq: ["$userId", userId] },
-                    ],
-                  },
-                },
-              },
-            ],
-            as: "fav",
-          },
+      },
+      {
+        $unwind: {
+          path: "$pref",
+          preserveNullAndEmptyArrays: true, // Keeps coffee shops with no preferences
         },
-        {
-          $addFields: {
-            fav: { $cond: [{ $gt: [{ $size: "$fav" }, 0] }, true, false] },
-          },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          address: 1,
+          distance: 1,
+          isFavorite: { $ifNull: ["$pref.isFavorite", false] },
+          isBookmarked: { $ifNull: ["$pref.isBookmarked", false] },
+          images: 1,
+          user: 1,
+          coffeeShop: 1,
+          createdAt: 1,
+          updatedAt: 1,
         },
-      ],
-    });
+      },
+    ]);
     return res.status(200).send(records);
   } catch (error) {
     res

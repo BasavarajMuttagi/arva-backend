@@ -1,28 +1,31 @@
 import { Request, Response } from "express";
-import prisma from "../../prisma/db";
 import { tokenType } from "../middlewares/auth.middleware";
+import { UserPreferences } from "../models/Models";
 
 const addShopToFavorite = async (req: Request, res: Response) => {
   try {
     const { userId } = req.body.user as tokenType;
-    const { shopId } = req.body;
+    const { shopId, isFavorite } = req.body;
 
-    const existingFavorite = await prisma.favorite.findFirst({
-      where: {
-        userId,
-        coffeeShopId: shopId,
-      },
+    const existingFavorite = await UserPreferences.exists({
+      coffeeShop: shopId,
+      user: userId,
+    }).then(async (data) => {
+      if (data) {
+        const record = await UserPreferences.findByIdAndUpdate(
+          { _id: data._id },
+          { isFavorite: isFavorite }
+        );
+        return res.sendStatus(200);
+      } else {
+        const record = await UserPreferences.create({
+          coffeeShop: shopId,
+          user: userId,
+          isFavorite,
+        });
+        return res.status(201).json(record);
+      }
     });
-
-    if (existingFavorite) {
-      return res.status(400).send({ message: "Shop already in favorites" });
-    }
-
-    const record = await prisma.favorite.create({
-      data: { coffeeShopId: shopId, userId },
-    });
-
-    return res.sendStatus(201);
   } catch (error) {
     res
       .status(500)

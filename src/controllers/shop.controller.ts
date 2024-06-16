@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { tokenType } from "../middlewares/auth.middleware";
-import { CoffeeShop } from "../models/Models";
+import { CoffeeShop, Product } from "../models/Models";
+import mongoose from "mongoose";
 
 const CreateShop = async (req: Request, res: Response) => {
   try {
@@ -13,6 +14,19 @@ const CreateShop = async (req: Request, res: Response) => {
         coordinates: [75.71949571239814, 16.813640678849257],
       },
     });
+
+    return res.status(201).send(record);
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: "Error Occured , Please Try Again!", error });
+  }
+};
+
+const createProducts = async (req: Request, res: Response) => {
+  try {
+    const user = req.body.user as tokenType;
+    const record = await Product.insertMany([]);
 
     return res.status(201).send(record);
   } catch (error) {
@@ -72,4 +86,55 @@ const GetShopsNearYou = async (req: Request, res: Response) => {
       .send({ message: "Error Occured , Please Try Again!", error });
   }
 };
-export { CreateShop, GetShopsNearYou };
+
+const GetShopDetailsById = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.body.user as tokenType;
+    const shopId = req.params.Id;
+    console.log(shopId);
+    const records = await CoffeeShop.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(shopId),
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "coffeeShop",
+          as: "products",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          address: 1,
+          images: 1,
+          products: {
+            $map: {
+              input: "$products",
+              as: "product",
+              in: {
+                _id: "$$product._id",
+                name: "$$product.name",
+                price: "$$product.price",
+                description: "$$product.description",
+                dietType: "$$product.dietType",
+                category: "$$product.category",
+              },
+            },
+          },
+        },
+      },
+    ]);
+    res.status(200).json(records[0] ? records[0] : []);
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: "Error Occured , Please Try Again!", error });
+  }
+};
+
+export { CreateShop, GetShopsNearYou, GetShopDetailsById, createProducts };

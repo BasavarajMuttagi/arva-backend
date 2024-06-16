@@ -38,8 +38,15 @@ const GetShopsNearYou = async (req: Request, res: Response) => {
             spherical: true,
           },
         },
+        {
+          $addFields: {
+            _id: { $toString: "$_id" },
+            createdAt: { $toString: "$createdAt" },
+            updatedAt: { $toString: "$updatedAt" },
+          },
+        },
       ],
-    })
+    });
     return res.status(200).send(records);
   } catch (error) {
     res

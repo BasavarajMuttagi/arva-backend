@@ -7,6 +7,17 @@ const userSchema = new Schema(
     email: { type: String, required: true },
     phone: String,
     password: { type: String, required: true },
+    address: { type: String },
+    pincode: { type: String },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+      },
+      coordinates: {
+        type: [Number],
+      },
+    },
   },
   { timestamps: true }
 );

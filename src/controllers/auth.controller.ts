@@ -7,7 +7,8 @@ import { User } from "../models/Models";
 
 const SignUpUser = async (req: Request, res: Response) => {
   try {
-    const { fullname, email, password } = req.body as userSignUpType;
+    const { fullname, email, password, address, phone, pincode } =
+      req.body as userSignUpType;
     const isUserExists = await User.exists({ email });
     if (isUserExists) {
       res.status(409).send({ message: "Account Exists!" });
@@ -18,6 +19,9 @@ const SignUpUser = async (req: Request, res: Response) => {
       fullname,
       email,
       password: encryprtedPassword,
+      address,
+      phone,
+      pincode,
     });
     res.status(201).send({ message: "Account Created SuccessFully!", record });
   } catch (error) {

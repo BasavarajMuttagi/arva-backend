@@ -71,8 +71,9 @@ const updateAddressById = async (req: Request, res: Response) => {
 const deleteAddressById = async (req: Request, res: Response) => {
   try {
     const user = req.body.user as tokenType;
+    const id = req.params.id;
     const deletedAddress = await Address.findByIdAndDelete({
-      _id: user.userId,
+      _id: id,
     });
     return res.status(200).send(deletedAddress);
   } catch (error) {

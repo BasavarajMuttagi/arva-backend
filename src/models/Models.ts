@@ -104,6 +104,7 @@ const reviewSchema = new Schema(
 );
 
 reviewSchema.index({ user: 1, coffeeShop: 1 }, { unique: true });
+
 const userPreferencesSchema = new Schema(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -119,10 +120,28 @@ const userPreferencesSchema = new Schema(
   { timestamps: true }
 );
 
+const polygonSchema = new Schema({
+  geometry: {
+    type: {
+      type: String,
+      enum: ["Polygon"],
+      required: true,
+    },
+    coordinates: {
+      type: [[[Number]]],
+      required: true,
+    },
+  },
+});
+
+polygonSchema.index({ geometry: "2dsphere" });
+
 const User = model("User", userSchema);
 const CoffeeShop = model("CoffeeShop", coffeeShopSchema);
 const Product = model("Product", productSchema);
 const Review = model("Review", reviewSchema);
 const UserPreferences = model("UserPreference", userPreferencesSchema);
 const Address = model("Address", addressSchema);
-export { User, CoffeeShop, Product, Review, UserPreferences, Address };
+const Polygon = model("Polygon", polygonSchema);
+
+export { User, CoffeeShop, Product, Review, UserPreferences, Address ,Polygon};

@@ -6,6 +6,7 @@ import ShopRouter from "./src/routes/shop.route";
 import UserRouter from "./src/routes/user.route";
 import mongoose from "mongoose";
 import AddressRouter from "./src/routes/address.route";
+import PolygonRouter from "./src/routes/polygon.route";
 
 dotenv.config();
 
@@ -22,7 +23,7 @@ app.use("/auth", AuthRouter);
 app.use("/shop", ShopRouter);
 app.use("/user", UserRouter);
 app.use("/address", AddressRouter);
-
+app.use("/polygon",PolygonRouter)
 async function main() {
   try {
     await mongoose.connect(DATABASE_URL!).then(() => {

@@ -13,6 +13,6 @@ AddressRouter.post("/create", validateToken, createAddress);
 AddressRouter.get("/get", validateToken, getAddressById);
 AddressRouter.get("/getall", validateToken, getAllAddresses);
 AddressRouter.post("/update", validateToken, updateAddressById);
-AddressRouter.get("/delete", validateToken, deleteAddressById);
+AddressRouter.get("/delete/:id", validateToken, deleteAddressById);
 
 export default AddressRouter;

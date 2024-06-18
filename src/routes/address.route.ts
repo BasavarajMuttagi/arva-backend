@@ -9,10 +9,10 @@ import {
 import { validateToken } from "../middlewares/auth.middleware";
 
 const AddressRouter = express.Router();
-AddressRouter.get("/create", validateToken, createAddress);
+AddressRouter.post("/create", validateToken, createAddress);
 AddressRouter.get("/get", validateToken, getAddressById);
 AddressRouter.get("/getall", validateToken, getAllAddresses);
-AddressRouter.get("/update", validateToken, updateAddressById);
-AddressRouter.post("/delete", validateToken, deleteAddressById);
+AddressRouter.post("/update", validateToken, updateAddressById);
+AddressRouter.get("/delete", validateToken, deleteAddressById);
 
 export default AddressRouter;

@@ -35,7 +35,6 @@ const locationSchema = z.object({
 
 const addressSchema = z.object({
   title: z.string().min(3).max(100),
-  user: z.string(),
   location: locationSchema,
   phone: z.string(),
   address: z.string().min(3).max(300),

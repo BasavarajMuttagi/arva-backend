@@ -5,6 +5,7 @@ import AuthRouter from "./src/routes/auth.route";
 import ShopRouter from "./src/routes/shop.route";
 import UserRouter from "./src/routes/user.route";
 import mongoose from "mongoose";
+import AddressRouter from "./src/routes/address.route";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.get("/", (req, res) => {
 app.use("/auth", AuthRouter);
 app.use("/shop", ShopRouter);
 app.use("/user", UserRouter);
+app.use("/address", AddressRouter);
 
 async function main() {
   try {

@@ -112,6 +112,7 @@ const GetShopDetailsById = async (req: Request, res: Response) => {
           name: 1,
           address: 1,
           images: 1,
+          location: 1,
           products: {
             $map: {
               input: "$products",

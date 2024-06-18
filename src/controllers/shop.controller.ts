@@ -143,7 +143,10 @@ const GetUserFavoriteShops = async (req: Request, res: Response) => {
     const { long, lat } = req.body;
 
     // Get the coffee shop IDs marked as favorites by the user
-    const favoriteCoffeeShopIds = await UserPreferences.find({ user: userId });
+    const favoriteCoffeeShopIds = await UserPreferences.find({
+      user: userId,
+      isFavorite: true,
+    });
     const favIds = favoriteCoffeeShopIds.map((doc) => doc.coffeeShop);
     const records = await CoffeeShop.aggregate([
       {

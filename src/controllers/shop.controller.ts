@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { tokenType } from "../middlewares/auth.middleware";
-import { CoffeeShop, Product } from "../models/Models";
+import { CoffeeShop, Product, UserPreferences } from "../models/Models";
 import mongoose from "mongoose";
 
 const CreateShop = async (req: Request, res: Response) => {
@@ -141,12 +141,21 @@ const GetUserFavoriteShops = async (req: Request, res: Response) => {
   try {
     const { userId } = req.body.user as tokenType;
     const { long, lat } = req.body;
+
+    // Get the coffee shop IDs marked as favorites by the user
+    const favoriteCoffeeShopIds = await UserPreferences.find({ user: userId });
+    const favIds = favoriteCoffeeShopIds.map((doc) => doc.coffeeShop);
     const records = await CoffeeShop.aggregate([
       {
         $geoNear: {
           near: { type: "Point", coordinates: [long, lat] },
           distanceField: "distance",
           spherical: true,
+        },
+      },
+      {
+        $match: {
+          _id: { $in: favIds },
         },
       },
       {
@@ -160,7 +169,7 @@ const GetUserFavoriteShops = async (req: Request, res: Response) => {
       {
         $unwind: {
           path: "$pref",
-          preserveNullAndEmptyArrays: true,
+          preserveNullAndEmptyArrays: true, // Keeps coffee shops with no preferences
         },
       },
       {
@@ -178,12 +187,8 @@ const GetUserFavoriteShops = async (req: Request, res: Response) => {
           updatedAt: 1,
         },
       },
-      {
-        $match: {
-          isFavorite: true,
-        },
-      },
     ]);
+
     return res.status(200).send(records);
   } catch (error) {
     res

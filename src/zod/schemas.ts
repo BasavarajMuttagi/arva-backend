@@ -29,14 +29,14 @@ const userLoginSchema = z.object({
 type userLoginType = z.infer<typeof userLoginSchema>;
 
 const locationSchema = z.object({
-  type: z.enum(["Point"]),
-  coordinates: z.array(z.number()).nonempty(),
+  type: z.enum(["Point"]).default("Point"),
+  coordinates: z.array(z.number()).length(2).nonempty(),
 });
 
 const addressSchema = z.object({
   title: z.string().min(3).max(100),
   location: locationSchema,
-  phone: z.string(),
+  phone: z.string().length(10),
   address: z.string().min(3).max(300),
   pincode: z.string().length(6),
 });

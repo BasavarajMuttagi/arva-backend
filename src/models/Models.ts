@@ -18,8 +18,8 @@ const addressSchema = new Schema(
     title: {
       type: String,
       required: true,
-      min: 3,
-      max: 100,
+      minLength: 3,
+      maxLength: 100,
     },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     location: {
@@ -36,14 +36,16 @@ const addressSchema = new Schema(
     phone: {
       type: String,
       required: true,
+      minLength: 10,
+      maxLength: 10,
     },
     address: {
       type: String,
       required: true,
-      min: 3,
-      max: 300,
+      minLength: 3,
+      maxLength: 300,
     },
-    pincode: { type: String, required: true, min: 6, max: 6 },
+    pincode: { type: String, required: true, minLength: 6, maxLength: 6 },
   },
   { timestamps: true }
 );

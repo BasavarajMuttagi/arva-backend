@@ -7,17 +7,41 @@ const userSchema = new Schema(
     email: { type: String, required: true },
     phone: String,
     password: { type: String, required: true },
-    address: { type: String },
-    pincode: { type: String },
+  },
+  { timestamps: true }
+);
+
+const addressSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      min: 3,
+      max: 100,
+    },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     location: {
       type: {
         type: String,
         enum: ["Point"],
+        required: true,
       },
       coordinates: {
         type: [Number],
+        required: true,
       },
     },
+    phone: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+      min: 3,
+      max: 300,
+    },
+    pincode: { type: String, required: true, min: 6, max: 6 },
   },
   { timestamps: true }
 );
@@ -96,5 +120,5 @@ const CoffeeShop = model("CoffeeShop", coffeeShopSchema);
 const Product = model("Product", productSchema);
 const Review = model("Review", reviewSchema);
 const UserPreferences = model("UserPreference", userPreferencesSchema);
-
-export { User, CoffeeShop, Product, Review, UserPreferences };
+const Address = model("Address", addressSchema);
+export { User, CoffeeShop, Product, Review, UserPreferences, Address };

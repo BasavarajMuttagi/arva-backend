@@ -137,4 +137,65 @@ const GetShopDetailsById = async (req: Request, res: Response) => {
   }
 };
 
-export { CreateShop, GetShopsNearYou, GetShopDetailsById, createProducts };
+const GetUserFavoriteShops = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.body.user as tokenType;
+    const { long, lat } = req.body;
+    const records = await CoffeeShop.aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [long, lat] },
+          distanceField: "distance",
+          spherical: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "userpreferences",
+          localField: "_id",
+          foreignField: "coffeeShop",
+          as: "pref",
+        },
+      },
+      {
+        $unwind: {
+          path: "$pref",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          address: 1,
+          distance: 1,
+          isFavorite: { $ifNull: ["$pref.isFavorite", false] },
+          isBookmarked: { $ifNull: ["$pref.isBookmarked", false] },
+          images: 1,
+          user: 1,
+          coffeeShop: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+      {
+        $match: {
+          isFavorite: true,
+        },
+      },
+    ]);
+    return res.status(200).send(records);
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: "Error Occured , Please Try Again!", error });
+  }
+};
+
+export {
+  CreateShop,
+  GetShopsNearYou,
+  GetShopDetailsById,
+  createProducts,
+  GetUserFavoriteShops,
+};

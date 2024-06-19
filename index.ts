@@ -7,6 +7,7 @@ import UserRouter from "./src/routes/user.route";
 import mongoose from "mongoose";
 import AddressRouter from "./src/routes/address.route";
 import PolygonRouter from "./src/routes/polygon.route";
+import { PaymentRouter } from "./src/routes/payment.route";
 
 dotenv.config();
 
@@ -16,6 +17,9 @@ app.use(express.json());
 const PORT = process.env.PORT;
 export const SECRET = process.env.SECRET;
 const DATABASE_URL = process.env.DATABASE_URL;
+export const STRIPE_KEY = process.env.STRIPE_SECRET;
+export const FE_BASE_URL = process.env.FE_BASE_URL;
+
 app.get("/", (req, res) => {
   return res.send("Hello From Arva");
 });
@@ -23,7 +27,8 @@ app.use("/auth", AuthRouter);
 app.use("/shop", ShopRouter);
 app.use("/user", UserRouter);
 app.use("/address", AddressRouter);
-app.use("/polygon",PolygonRouter)
+app.use("/polygon", PolygonRouter);
+app.use("/stripe", PaymentRouter);
 async function main() {
   try {
     await mongoose.connect(DATABASE_URL!).then(() => {

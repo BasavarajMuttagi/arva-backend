@@ -136,6 +136,46 @@ const polygonSchema = new Schema({
 
 polygonSchema.index({ geometry: "2dsphere" });
 
+const orderSchema = new Schema({
+  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  shopId: { type: Schema.Types.ObjectId, ref: "CoffeeShop", required: true },
+  phone: String,
+  pincode: String,
+  items: [
+    {
+      price_data: {
+        currency: String,
+        product_data: {
+          name: String,
+          description: String,
+          images: [String],
+          metadata: {
+            id: String,
+          },
+        },
+        unit_amount: Number,
+      },
+      quantity: Number,
+    },
+  ],
+  address: {
+    title: { type: String, required: true },
+    _id: { type: Schema.Types.ObjectId, ref: "Address", required: true },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        required: true,
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+      },
+    },
+  },
+  paymentId: { type: String, required: true },
+});
+
 const User = model("User", userSchema);
 const CoffeeShop = model("CoffeeShop", coffeeShopSchema);
 const Product = model("Product", productSchema);
@@ -143,5 +183,14 @@ const Review = model("Review", reviewSchema);
 const UserPreferences = model("UserPreference", userPreferencesSchema);
 const Address = model("Address", addressSchema);
 const Polygon = model("Polygon", polygonSchema);
-
-export { User, CoffeeShop, Product, Review, UserPreferences, Address ,Polygon};
+const Order = model("Order", orderSchema);
+export {
+  User,
+  CoffeeShop,
+  Product,
+  Review,
+  UserPreferences,
+  Address,
+  Polygon,
+  Order,
+};

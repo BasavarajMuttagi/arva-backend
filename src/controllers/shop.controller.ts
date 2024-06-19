@@ -39,13 +39,12 @@ const createProducts = async (req: Request, res: Response) => {
 const GetShopsNearYou = async (req: Request, res: Response) => {
   try {
     const { userId } = req.body.user as tokenType;
-    const { long, lat, max_distance } = req.body;
+    const { long, lat } = req.body;
     const records = await CoffeeShop.aggregate([
       {
         $geoNear: {
           near: { type: "Point", coordinates: [long, lat] },
           distanceField: "distance",
-          maxDistance: max_distance,
           spherical: true,
         },
       },

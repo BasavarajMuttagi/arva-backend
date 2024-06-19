@@ -32,7 +32,9 @@ const createStripeSession = async (req: Request, res: Response) => {
         payment_method_types: ["card"],
         line_items: [...products],
         mode: "payment",
-        return_url: `${FE_BASE_URL}`,
+        return_url: `${FE_BASE_URL}/success`,
+        success_url: `${FE_BASE_URL}/success`,
+        cancel_url: `${FE_BASE_URL}/failure`,
       })
       .then(async (res) => {
         const record = await Order.create({

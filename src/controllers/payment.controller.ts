@@ -11,7 +11,8 @@ const createStripeSession = async (req: Request, res: Response) => {
   try {
     const { userId, name, email } = req.body.user as tokenType;
     const Stripe = new stripe(STRIPE_KEY as string);
-    const { products, address } = req.body;
+    const { products, address, shopId } = req.body;
+
     console.log(products);
     const customer = await Stripe.customers.create({
       name,
@@ -35,7 +36,9 @@ const createStripeSession = async (req: Request, res: Response) => {
       })
       .then(async (res) => {
         const record = await Order.create({
-          ...req.body,
+          shopId,
+          items: products,
+          address,
           user: userId,
           paymentId: res.client_secret,
         });
@@ -51,12 +54,19 @@ const createStripeSession = async (req: Request, res: Response) => {
 
 const getAllOrders = async (req: Request, res: Response) => {
   try {
-    const token = req.headers.authorization as any;
-    const bearer = token.split(" ");
-    const bearerToken = bearer[1];
-    const { userId } = decode(bearerToken) as any;
+    const { userId, name, email } = req.body.user as tokenType;
+    const record = await Order.find({ user: userId })
+      .select({
+        "address.title": 1,
+        images: 1,
+        items: 1,
+        paymentId: 1,
+      })
+      .populate("shopId", {
+        name: 1,
+        address: 1,
+      });
 
-    const record = await Order.find({ userId });
     res.status(200).send({ message: "success", data: record ? record : [] });
   } catch (error) {
     console.log(error);

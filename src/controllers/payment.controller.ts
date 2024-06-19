@@ -33,7 +33,6 @@ const createStripeSession = async (req: Request, res: Response) => {
         line_items: [...products],
         mode: "payment",
         return_url: `${FE_BASE_URL}/success`,
-        success_url: `${FE_BASE_URL}/success`,
         cancel_url: `${FE_BASE_URL}/failure`,
       })
       .then(async (res) => {

@@ -33,6 +33,24 @@ const stripWebHook = async (req: Request, res: Response) => {
       break;
     }
 
+    case "checkout.session.expired": {
+      const session = event.data.object;
+      if (session.payment_status == "paid") {
+        const record = await Order.findOneAndUpdate(
+          { sessionId: session.id },
+          { $set: { paymentStatus: "Success" } }
+        );
+      }
+
+      if (session.payment_status == "unpaid") {
+        const record = await Order.findOneAndUpdate(
+          { sessionId: session.id },
+          { $set: { paymentStatus: "Failure" } }
+        );
+      }
+      break;
+    }
+
     default:
       console.log(`Unhandled event type ${event.type}`);
   }

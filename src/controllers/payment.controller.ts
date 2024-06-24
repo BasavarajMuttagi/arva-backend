@@ -21,6 +21,7 @@ const createStripeSession = async (req: Request, res: Response) => {
         postal_code: "586109",
       },
     });
+    const now = Math.floor(Date.now() / 1000);
     const session = await Stripe.checkout.sessions
       .create({
         customer: customer.id,
@@ -29,6 +30,7 @@ const createStripeSession = async (req: Request, res: Response) => {
         line_items: [...products],
         mode: "payment",
         return_url: `${FE_BASE_URL}/success`,
+        expires_at: now +  (30 * 60),
       })
       .then(async (res) => {
         const record = await Order.create({

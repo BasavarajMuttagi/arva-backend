@@ -32,6 +32,9 @@ const stripWebHook = async (req: Request, res: Response) => {
       }
       break;
     }
+
+    default:
+      console.log(`Unhandled event type ${event.type}`);
   }
 
   res.sendStatus(200);

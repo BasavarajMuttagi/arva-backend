@@ -28,6 +28,7 @@ app.use(
 );
 
 app.post("/webhook", express.raw({ type: "application/json" }), stripWebHook);
+
 app.use(express.json());
 
 app.get("/", (req, res) => {

@@ -3,11 +3,10 @@ import stripe from "stripe";
 import { STRIPE_KEY, FE_BASE_URL, STRIPE_WEBHOOK } from "../..";
 import { tokenType } from "../middlewares/auth.middleware";
 import { Order } from "../models/Models";
-
 const createStripeSession = async (req: Request, res: Response) => {
   try {
-    const { userId, name, email } = req.body.user as tokenType;
     const Stripe = new stripe(STRIPE_KEY as string);
+    const { userId, name, email } = req.body.user as tokenType;
     const { products, address, shopId } = req.body;
 
     const customer = await Stripe.customers.create({
@@ -29,8 +28,8 @@ const createStripeSession = async (req: Request, res: Response) => {
         payment_method_types: ["card"],
         line_items: [...products],
         mode: "payment",
-        return_url: `${FE_BASE_URL}/success`,
-        expires_at: now +  (30 * 60),
+        return_url: `${FE_BASE_URL}/return?session_id={CHECKOUT_SESSION_ID}`,
+        expires_at: now + 30 * 60,
       })
       .then(async (res) => {
         const record = await Order.create({
@@ -70,12 +69,21 @@ const getAllOrders = async (req: Request, res: Response) => {
 
     res.status(200).send({ message: "success", data: record ? record : [] });
   } catch (error) {
-    console.log(error);
+    res.sendStatus(400);
   }
 };
 
-const getOrderStatus = async (req: Request, res: Response) => {
-  const Stripe = new stripe(STRIPE_KEY as string);
+const checkSessionStatus = async (req: Request, res: Response) => {
+  try {
+    const Stripe = new stripe(STRIPE_KEY as string);
+    const session_id = req.query.session_id as string;
+    const session = await Stripe.checkout.sessions.retrieve(session_id);
+    res.send({
+      status: session.status,
+    });
+  } catch (error) {
+    res.sendStatus(400);
+  }
 };
 
-export { createStripeSession, getAllOrders, getOrderStatus };
+export { createStripeSession, getAllOrders, checkSessionStatus };

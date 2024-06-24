@@ -122,6 +122,7 @@ const GetShopDetailsById = async (req: Request, res: Response) => {
                 description: "$$product.description",
                 dietType: "$$product.dietType",
                 category: "$$product.category",
+                imageUrl : "$$product.imageUrl",
               },
             },
           },

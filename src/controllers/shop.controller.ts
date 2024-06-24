@@ -90,7 +90,6 @@ const GetShopDetailsById = async (req: Request, res: Response) => {
   try {
     const { userId } = req.body.user as tokenType;
     const shopId = req.params.Id;
-    console.log(shopId);
     const records = await CoffeeShop.aggregate([
       {
         $match: {

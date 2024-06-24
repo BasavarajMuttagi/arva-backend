@@ -173,7 +173,20 @@ const orderSchema = new Schema({
       },
     },
   },
-  paymentId: { type: String, required: true },
+  sessionId: {
+    type: String,
+    required: true,
+  },
+  customerId: {
+    type: String,
+    required: true,
+  },
+  paymentStatus: {
+    type: String,
+    required: true,
+    enum: ["Processing", "Success", "Failure"],
+    default: "Processing",
+  },
 });
 
 const User = model("User", userSchema);

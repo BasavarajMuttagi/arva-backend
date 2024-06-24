@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
-
 import stripe from "stripe";
-import { STRIPE_KEY, FE_BASE_URL } from "../..";
-
-import { decode } from "jsonwebtoken";
+import { STRIPE_KEY, FE_BASE_URL, STRIPE_WEBHOOK } from "../..";
 import { tokenType } from "../middlewares/auth.middleware";
 import { Order } from "../models/Models";
 
@@ -13,7 +10,6 @@ const createStripeSession = async (req: Request, res: Response) => {
     const Stripe = new stripe(STRIPE_KEY as string);
     const { products, address, shopId } = req.body;
 
-    console.log(products);
     const customer = await Stripe.customers.create({
       name,
       email,
@@ -40,7 +36,9 @@ const createStripeSession = async (req: Request, res: Response) => {
           items: products,
           address,
           user: userId,
-          paymentId: res.client_secret,
+          sessionId: res.id,
+          customerId: res.customer,
+          paymentStatus: "Processing",
         });
 
         return res;
@@ -54,13 +52,14 @@ const createStripeSession = async (req: Request, res: Response) => {
 
 const getAllOrders = async (req: Request, res: Response) => {
   try {
-    const { userId, name, email } = req.body.user as tokenType;
+    const { userId } = req.body.user as tokenType;
     const record = await Order.find({ user: userId })
       .select({
         "address.title": 1,
         images: 1,
         items: 1,
-        paymentId: 1,
+        sessionId: 1,
+        paymentStatus: 1,
       })
       .populate("shopId", {
         name: 1,
@@ -74,7 +73,7 @@ const getAllOrders = async (req: Request, res: Response) => {
 };
 
 const getOrderStatus = async (req: Request, res: Response) => {
-  console.log(req.body);
   const Stripe = new stripe(STRIPE_KEY as string);
 };
+
 export { createStripeSession, getAllOrders, getOrderStatus };

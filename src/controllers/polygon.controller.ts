@@ -36,9 +36,7 @@ const CreatePolygon = async (req: Request, res: Response) => {
 const CheckLocation = async (req: Request, res: Response) => {
   try {
     const polygonId = "66718874e7ac4c48da95a064";
-    const user = req.body.user as tokenType;
     const { location } = req.body;
-    console.log(location);
     const record = await Polygon.findOne({
       _id: polygonId,
       geometry: {

@@ -11,4 +11,5 @@ const PaymentRouter = express.Router();
 PaymentRouter.post("/stripe-session", validateToken, createStripeSession);
 PaymentRouter.get("/orders", validateToken, getAllOrders);
 PaymentRouter.post("/orderstatus", validateToken, getOrderStatus);
+
 export { PaymentRouter };

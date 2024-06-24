@@ -8,25 +8,32 @@ import mongoose from "mongoose";
 import AddressRouter from "./src/routes/address.route";
 import PolygonRouter from "./src/routes/polygon.route";
 import { PaymentRouter } from "./src/routes/payment.route";
+import stripWebHook from "./src/webhooks/stripe";
 
 dotenv.config();
 
 const app = express();
-app.use(
-  cors({
-    origin: "*",
-  })
-);
-app.use(express.json());
+
 const PORT = process.env.PORT;
 export const SECRET = process.env.SECRET;
 const DATABASE_URL = process.env.DATABASE_URL;
 export const STRIPE_KEY = process.env.STRIPE_SECRET;
 export const FE_BASE_URL = process.env.FE_BASE_URL;
+export const STRIPE_WEBHOOK = process.env.STRIPE_WEBHOOK;
+
+app.use(
+  cors({
+    origin: "*",
+  })
+);
+
+app.post("/webhook", express.raw({ type: "application/json" }), stripWebHook);
+app.use(express.json());
 
 app.get("/", (req, res) => {
   return res.send("Hello From Arva");
 });
+
 app.use("/auth", AuthRouter);
 app.use("/shop", ShopRouter);
 app.use("/user", UserRouter);

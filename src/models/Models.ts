@@ -82,7 +82,7 @@ const productSchema = new Schema(
     },
     category: {
       type: String,
-      enum: ["COFFEE", "DRINK", "FOOD"],
+      enum: ["COFFEE", "DRINKS", "FOOD"],
       required: true,
     },
     coffeeShop: { type: Schema.Types.ObjectId, ref: "CoffeeShop" },
@@ -208,3 +208,4 @@ export {
   Polygon,
   Order,
 };
+

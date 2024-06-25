@@ -206,6 +206,11 @@ const GetUserFavoriteShops = async (req: Request, res: Response) => {
         },
       },
       {
+        $match: {
+          "pref.isFavorite": true,
+        },
+      },
+      {
         $project: {
           _id: 1,
           name: 1,

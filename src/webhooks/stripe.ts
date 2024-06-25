@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import stripe from "stripe";
-import { STRIPE_WEBHOOK } from "../..";
+import { STRIPE_KEY, STRIPE_WEBHOOK } from "../..";
 import { Order } from "../models/Models";
 
 const stripWebHook = async (req: Request, res: Response) => {
@@ -8,7 +8,8 @@ const stripWebHook = async (req: Request, res: Response) => {
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig!, STRIPE_WEBHOOK!);
+    const Stripe = new stripe(STRIPE_KEY as string);
+    event = Stripe.webhooks.constructEvent(req.body, sig!, STRIPE_WEBHOOK!);
   } catch (err: any) {
     res.status(400).send(`Webhook Error: ${err.message}`);
     return;

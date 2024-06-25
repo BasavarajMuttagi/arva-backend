@@ -19,7 +19,7 @@ export const SECRET = process.env.SECRET;
 const DATABASE_URL = process.env.DATABASE_URL;
 export const STRIPE_KEY = process.env.STRIPE_SECRET;
 export const FE_BASE_URL = process.env.FE_BASE_URL;
-export const STRIPE_WEBHOOK = process.env.STRIPE_WEBHOOK;
+export const STRIPE_WEBHOOK = process.env.STRIPE_WEBHOOK as string;
 
 app.use(
   cors({

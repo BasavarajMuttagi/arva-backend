@@ -220,6 +220,8 @@ const GetUserFavoriteShops = async (req: Request, res: Response) => {
           name: 1,
           address: 1,
           distance: 1,
+          reviews: 1,
+          rating: 1,
           isFavorite: { $ifNull: ["$pref.isFavorite", false] },
           isBookmarked: { $ifNull: ["$pref.isBookmarked", false] },
           images: 1,

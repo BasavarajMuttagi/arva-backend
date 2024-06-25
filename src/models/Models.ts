@@ -54,6 +54,8 @@ const coffeeShopSchema = new Schema({
   name: { type: String, required: true },
   address: { type: String, required: true },
   images: [String],
+  reviews: { type: Number, required: true },
+  rating: { type: Number, required: true },
   location: {
     type: {
       type: String,
@@ -181,13 +183,4 @@ const UserPreferences = model("UserPreference", userPreferencesSchema);
 const Address = model("Address", addressSchema);
 const Polygon = model("Polygon", polygonSchema);
 const Order = model("Order", orderSchema);
-export {
-  User,
-  CoffeeShop,
-  Product,
-  UserPreferences,
-  Address,
-  Polygon,
-  Order,
-};
-
+export { User, CoffeeShop, Product, UserPreferences, Address, Polygon, Order };

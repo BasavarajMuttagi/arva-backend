@@ -84,6 +84,8 @@ const GetShopsNearYou = async (req: Request, res: Response) => {
           name: 1,
           address: 1,
           distance: 1,
+          reviews: 1,
+          rating: 1,
           isFavorite: {
             $ifNull: ["$pref.isFavorite", false],
           },
@@ -131,6 +133,8 @@ const GetShopDetailsById = async (req: Request, res: Response) => {
           address: 1,
           images: 1,
           location: 1,
+          reviews: 1,
+          rating: 1,
           products: {
             $map: {
               input: "$products",

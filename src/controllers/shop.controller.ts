@@ -162,23 +162,15 @@ const GetUserFavoriteShops = async (req: Request, res: Response) => {
     const { userId } = req.body.user as tokenType;
     const { long, lat } = req.body;
 
-    // Get the coffee shop IDs marked as favorites by the user
-    const favoriteCoffeeShopIds = await UserPreferences.find({
-      user: userId,
-      isFavorite: true,
-    });
-    const favIds = favoriteCoffeeShopIds.map((doc) => doc.coffeeShop);
     const records = await CoffeeShop.aggregate([
       {
         $geoNear: {
-          near: { type: "Point", coordinates: [long, lat] },
+          near: {
+            type: "Point",
+            coordinates: [long, lat],
+          },
           distanceField: "distance",
           spherical: true,
-        },
-      },
-      {
-        $match: {
-          _id: { $in: favIds },
         },
       },
       {
@@ -190,9 +182,27 @@ const GetUserFavoriteShops = async (req: Request, res: Response) => {
         },
       },
       {
+        $match: {
+          "pref.user": new mongoose.Types.ObjectId(userId),
+        },
+      },
+      {
+        $addFields: {
+          pref: {
+            $filter: {
+              input: "$pref",
+              as: "prefItem",
+              cond: {
+                $eq: ["$$prefItem.user", new mongoose.Types.ObjectId(userId)],
+              },
+            },
+          },
+        },
+      },
+      {
         $unwind: {
           path: "$pref",
-          preserveNullAndEmptyArrays: true, // Keeps coffee shops with no preferences
+          preserveNullAndEmptyArrays: true,
         },
       },
       {

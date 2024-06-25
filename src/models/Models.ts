@@ -90,22 +90,6 @@ const productSchema = new Schema(
   { timestamps: true }
 );
 
-const reviewSchema = new Schema(
-  {
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    coffeeShop: {
-      type: Schema.Types.ObjectId,
-      ref: "CoffeeShop",
-      required: true,
-    },
-    rating: { type: Number, min: 1, max: 5, required: true, default: 1 },
-    review: { type: String },
-  },
-  { timestamps: true }
-);
-
-reviewSchema.index({ user: 1, coffeeShop: 1 }, { unique: true });
-
 const userPreferencesSchema = new Schema(
   {
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -193,7 +177,6 @@ const orderSchema = new Schema({
 const User = model("User", userSchema);
 const CoffeeShop = model("CoffeeShop", coffeeShopSchema);
 const Product = model("Product", productSchema);
-const Review = model("Review", reviewSchema);
 const UserPreferences = model("UserPreference", userPreferencesSchema);
 const Address = model("Address", addressSchema);
 const Polygon = model("Polygon", polygonSchema);
@@ -202,7 +185,6 @@ export {
   User,
   CoffeeShop,
   Product,
-  Review,
   UserPreferences,
   Address,
   Polygon,

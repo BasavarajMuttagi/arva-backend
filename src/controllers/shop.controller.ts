@@ -43,7 +43,10 @@ const GetShopsNearYou = async (req: Request, res: Response) => {
     const records = await CoffeeShop.aggregate([
       {
         $geoNear: {
-          near: { type: "Point", coordinates: [long, lat] },
+          near: {
+            type: "Point",
+            coordinates: [long, lat],
+          },
           distanceField: "distance",
           spherical: true,
         },
@@ -57,9 +60,22 @@ const GetShopsNearYou = async (req: Request, res: Response) => {
         },
       },
       {
+        $addFields: {
+          pref: {
+            $filter: {
+              input: "$pref",
+              as: "prefItem",
+              cond: {
+                $eq: ["$$prefItem.user", new mongoose.Types.ObjectId(userId)],
+              },
+            },
+          },
+        },
+      },
+      {
         $unwind: {
           path: "$pref",
-          preserveNullAndEmptyArrays: true, // Keeps coffee shops with no preferences
+          preserveNullAndEmptyArrays: true,
         },
       },
       {
@@ -68,8 +84,12 @@ const GetShopsNearYou = async (req: Request, res: Response) => {
           name: 1,
           address: 1,
           distance: 1,
-          isFavorite: { $ifNull: ["$pref.isFavorite", false] },
-          isBookmarked: { $ifNull: ["$pref.isBookmarked", false] },
+          isFavorite: {
+            $ifNull: ["$pref.isFavorite", false],
+          },
+          isBookmarked: {
+            $ifNull: ["$pref.isBookmarked", false],
+          },
           images: 1,
           user: 1,
           coffeeShop: 1,
@@ -122,7 +142,7 @@ const GetShopDetailsById = async (req: Request, res: Response) => {
                 description: "$$product.description",
                 dietType: "$$product.dietType",
                 category: "$$product.category",
-                imageUrl : "$$product.imageUrl",
+                imageUrl: "$$product.imageUrl",
               },
             },
           },
